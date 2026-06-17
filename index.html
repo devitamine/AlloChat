@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlloChat — Secure E2E Messenger on Algorand Mainnet</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              dark: '#030712',
+              card: '#0b0f19',
+              emerald: '#10b981',
+              pink: '#ec4899',
+              gold: '#f59e0b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #020617;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.04) 0%, transparent 40%);
+    }
+    .glow-emerald {
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.15);
+    }
+    .glow-pink {
+      box-shadow: 0 0 35px rgba(236, 72, 153, 0.12);
+    }
+    .glass-card {
+      background: rgba(11, 15, 25, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
+<body class="text-slate-300 font-sans antialiased min-h-screen selection:bg-emerald-500/30 selection:text-emerald-300">
+
+  <!-- Floating Nav -->
+  <header class="sticky top-0 z-50 w-full border-b border-slate-900 bg-slate-950/70 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <img src="icon128.png" alt="AlloChat Logo" class="w-8 h-8 object-contain rounded-lg shadow-md" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/algorand/brand-assets/master/logo/png/algorand_logo_mark_black.png';">
+        <span class="text-white font-bold tracking-tight text-lg">AlloChat <span class="text-emerald-400 text-xs font-mono font-medium px-1.5 py-0.5 rounded bg-emerald-950/50 border border-emerald-500/20">Mainnet v1.0</span></span>
+      </div>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
+        <a href="#features" class="hover:text-white transition font-semibold">Features</a>
+        <a href="#how-it-works" class="hover:text-white transition font-semibold">How It Works</a>
+        <a href="#installation" class="hover:text-white transition font-semibold">Installation</a>
+        <a href="https://github.com/devitamine/AlloChat" target="_blank" class="hover:text-white transition flex items-center gap-1 font-semibold"><svg class="w-4 h-4 fill-current" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg> GitHub</a>
+        <a href="#donation" class="hover:text-amber-400 transition flex items-center gap-1"><span class="material-icons text-[16px]">favorite</span> Support Us</a>
+      </nav>
+      <div>
+        <a href="https://github.com/devitamine/AlloChat/archive/refs/heads/main.zip" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow-lg shadow-emerald-900/20">
+          <span class="material-icons text-sm">download</span> Download Extension ZIP
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative py-12 md:py-20 px-4 max-w-6xl mx-auto">
+    <div class="absolute inset-0 top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-emerald-500/5 blur-[120px] rounded-full -z-10"></div>
+    <div class="absolute inset-0 top-1/2 right-10 w-60 h-60 bg-pink-500/5 blur-[100px] rounded-full -z-10"></div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <!-- Left side: Text & Actions -->
+      <div class="lg:col-span-7 text-left">
+        <span class="inline-flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono px-3.5 py-1.5 rounded-full mb-6 uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Secure Cryptographic Messenger
+        </span>
+        
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+          Absolute Privacy <br class="hidden sm:inline">Without Data Trails.<br>
+          <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-pink-400 bg-clip-text text-transparent">E2E Szyfrowanie on Algorand</span>
+        </h1>
+        
+        <p class="text-slate-400 text-base sm:text-lg mb-8 leading-relaxed max-w-xl">
+          AlloChat is a decentralized, metadata-resistant browser extension for Chromium. 
+          Every chat dispatch is processed as a secure, zero-value microtransaction directly on the **Algorand Mainnet** with military-grade, end-to-end encryption.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-8">
+          <a href="https://github.com/devitamine/AlloChat/archive/refs/heads/main.zip" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-semibold px-7 py-3.5 rounded-xl transition shadow-lg shadow-emerald-500/10">
+            <span class="material-icons">download</span> Download Extension ZIP
+          </a>
+          <a href="https://github.com/devitamine/AlloChat" target="_blank" class="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-semibold px-7 py-3.5 rounded-xl transition">
+            <svg class="w-5 h-5 fill-current text-white" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg> View on GitHub
+          </a>
+        </div>
+
+        <!-- Trust factors / quick specs -->
+        <div class="grid grid-cols-3 gap-4 pt-6 border-t border-slate-900">
+          <div>
+            <div class="text-white font-bold text-lg font-mono">0%</div>
+            <div class="text-slate-500 text-xs mt-0.5">Logs Saved</div>
+          </div>
+          <div>
+            <div class="text-white font-bold text-lg font-mono">256-bit</div>
+            <div class="text-slate-500 text-xs mt-0.5">AES-GCM Keys</div>
+          </div>
+          <div>
+            <div class="text-white font-bold text-lg font-mono">0.001 <span class="text-xs font-normal text-slate-500">ALGO</span></div>
+            <div class="text-slate-500 text-xs mt-0.5">Tx Fee / Message</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side: Realistic extension preview with screenshot.png -->
+      <div class="lg:col-span-5 flex justify-center lg:justify-end">
+        <div class="relative w-full max-w-[360px] border border-slate-900 rounded-2xl bg-brand-dark/95 glow-emerald p-2 group hover:border-emerald-500/25 transition duration-300">
+          <div class="border border-slate-800/80 rounded-xl bg-slate-950 overflow-hidden">
+            <!-- Window header -->
+            <div class="flex items-center justify-between border-b border-slate-900 px-4 py-3 bg-slate-950">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500/60"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500/60"></span>
+                <span class="text-[10px] font-mono text-slate-500 ml-1.5">AlloChat Extension Popup</span>
+              </div>
+              <div class="flex items-center gap-1 text-[10px] text-emerald-400 font-mono bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                <span class="w-1 h-1 rounded-full bg-emerald-400 animate-pulse"></span> Mainnet Active
+              </div>
+            </div>
+            
+            <!-- Actual screenshot img -->
+            <div class="relative aspect-[375/576] bg-slate-900 flex items-center justify-center overflow-hidden">
+              <img src="screenshot.png" alt="AlloChat Interface" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/algorand/brand-assets/master/logo/png/algorand_logo_mark_black.png'; this.className='w-1/3 opacity-30 invert py-20';">
+            </div>
+          </div>
+          <!-- Decorative element: glow badge -->
+          <div class="absolute -bottom-4 -right-4 bg-slate-900 border border-slate-800 text-[11px] font-mono hover:border-pink-500/20 text-slate-300 px-3 py-1.5 rounded-lg shadow-xl flex items-center gap-1.5">
+            <span class="material-icons text-pink-400 text-xs flex items-center justify-center">sparkles</span> Pristine UI & UX
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Features Grid -->
+  <section id="features" class="py-20 px-4 bg-slate-950/40 border-y border-slate-950">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-white mb-4">Sophisticated Cryptography for Absolute Privacy</h2>
+        <p class="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">Designed from the ground up with no central tracking servers, sign-ups, logs, or stored credentials.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="glass-card p-8 rounded-2xl relative overflow-hidden group hover:border-emerald-500/20 transition duration-300">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6">
+            <span class="material-icons">vpn_key</span>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-3">End-to-End Encryption</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            All messages are securely encrypted with high-entropy **AES-GCM** keys derived on-the-fly and signed locally with the sender's private key before hitting the blockchain ledger.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="glass-card p-8 rounded-2xl relative overflow-hidden group hover:border-pink-500/20 transition duration-300">
+          <div class="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 mb-6">
+            <span class="material-icons">lock_clock</span>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-3">Active Autolock (RAM Sanitization)</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            The Chromium MV3 alarm architecture enforces a custom idle autolock threshold. Private keys and secure payloads are securely purged from your RAM space when idle to prevent extraction.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="glass-card p-8 rounded-2xl relative overflow-hidden group hover:border-teal-500/20 transition duration-300">
+          <div class="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 mb-6">
+            <span class="material-icons">cloud_queue</span>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-3">Encrypted IPFS Storage</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Send rich media, files, or documents securely. Raw items are automatically encrypted in-browser before being securely deployed to decentralized IPFS gateways via Pinata API routines.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works & Speed -->
+  <section id="how-it-works" class="py-20 px-4 max-w-5xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl font-bold text-white mb-4">Decentralized Transaction Architecture</h2>
+      <p class="text-slate-400 max-w-xl mx-auto text-sm">AlloChat stores no conversation logs or profiles. Your chats exist solely as encrypted, secure data points inside Algorand transaction note spaces.</p>
+    </div>
+
+    <div class="space-y-12">
+      <div class="flex flex-col md:flex-row items-start gap-8 border-l-2 border-slate-900 pl-6 md:pl-10 relative">
+        <div class="absolute -left-[9px] top-0.5 w-4 h-4 rounded-full bg-emerald-500 ring-4 ring-emerald-950"></div>
+        <div class="md:w-1/3">
+          <span class="text-4xl font-extrabold text-slate-800">01</span>
+          <h4 class="text-lg font-bold text-white mt-1">Keys Generation</h4>
+        </div>
+        <div class="md:w-2/3">
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Your cryptographic keys and Algorand address are derived entirely locally from a secure BIP-39 25-word mnemonic seed. Secret credentials never escape the memory context of your local browser.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex flex-col md:flex-row items-start gap-8 border-l-2 border-slate-900 pl-6 md:pl-10 relative">
+        <div class="absolute -left-[9px] top-0.5 w-4 h-4 rounded-full bg-pink-500 ring-4 ring-pink-950"></div>
+        <div class="md:w-1/3">
+          <span class="text-4xl font-extrabold text-slate-800">02</span>
+          <h4 class="text-lg font-bold text-white mt-1">Encryption & Broadcast</h4>
+        </div>
+        <div class="md:w-2/3">
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Before dispatching, your text is securely encrypted using Diffie-Hellman (X25519) key exchange setups. It is then published as a 0 ALGO transaction to the blockchain. The flat cost of sending is just 0.001 ALGO per write.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex flex-col md:flex-row items-start gap-8 border-l-2 border-slate-900 pl-6 md:pl-10 relative">
+        <div class="absolute -left-[9px] top-0.5 w-4 h-4 rounded-full bg-teal-500 ring-4 ring-teal-950"></div>
+        <div class="md:w-1/3">
+          <span class="text-4xl font-extrabold text-slate-800">03</span>
+          <h4 class="text-lg font-bold text-white mt-1">Asynchronous Background Syncer</h4>
+        </div>
+        <div class="md:w-2/3">
+          <p class="text-slate-400 text-sm leading-relaxed">
+            A background service worker, highly optimized for Manifest V3 extension standards, polls Algonode API block indexes for incoming cryptographic notes matching your address hash, instant-notifying you without battery drain.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Installation Steps -->
+  <section id="installation" class="py-20 px-4 bg-slate-950/60 border-t border-slate-950">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-white mb-3">Direct Extension Installation (Load Unpacked)</h2>
+        <p class="text-slate-400 text-sm max-w-lg mx-auto">As an audited, fully open-source security tool, you install AlloChat as an unpacked directory manually, isolating it from third-party runtime modifications.</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-6 md:p-8 space-y-6">
+        <!-- Step 1 -->
+        <div class="flex gap-4">
+          <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 font-mono font-bold text-sm flex items-center justify-center shrink-0 border border-emerald-500/20">1</div>
+          <div>
+            <h5 class="text-white font-bold mb-1">Download the Repository Packages</h5>
+            <p class="text-slate-400 text-sm leading-relaxed"><a href="https://github.com/devitamine/AlloChat/archive/refs/heads/main.zip" class="text-emerald-400 hover:underline font-semibold">Click here to download the repository as a ZIP archive</a> or clone it using git with <code class="font-mono text-xs text-white bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">git clone https://github.com/devitamine/AlloChat.git</code>. Once downloaded, extract the contents and locate the main production extension bundle folder: <code class="font-mono text-xs text-white bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">/allochat-extension-mainnet/</code>.</p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex gap-4">
+          <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 font-mono font-bold text-sm flex items-center justify-center shrink-0 border border-emerald-500/20">2</div>
+          <div>
+            <h5 class="text-white font-bold mb-1">Open Extensions Panel in Chromium</h5>
+            <p class="text-slate-400 text-sm leading-relaxed">In your address bar (supports Chrome, Brave, Arc, Edge, Opera, Vivaldi), type: <code class="font-mono text-xs text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded border border-emerald-500/10">chrome://extensions/</code> and press Enter.</p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex gap-4">
+          <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 font-mono font-bold text-sm flex items-center justify-center shrink-0 border border-emerald-500/20">3</div>
+          <div>
+            <h5 class="text-white font-bold mb-1">Activate Developer Mode</h5>
+            <p class="text-slate-400 text-sm leading-relaxed">In the top right-hand corner of the browser extensions manager page, toggle on the **Developer mode** slider.</p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="flex gap-4">
+          <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 font-mono font-bold text-sm flex items-center justify-center shrink-0 border border-emerald-500/20">4</div>
+          <div>
+            <h5 class="text-white font-bold mb-1">Load the Unpacked Directory</h5>
+            <p class="text-slate-400 text-sm leading-relaxed">Click the utility button **Load unpacked** in the top-left area. Select the local copy of your <code class="font-mono text-xs text-white bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">/allochat-extension-mainnet/</code> directory. Pin the icon, and secure your chats!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Donation Details & QR Code section -->
+  <section id="donation" class="py-20 px-4 max-w-4xl mx-auto relative">
+    <div class="absolute inset-0 bg-pink-500/5 blur-[120px] rounded-full -z-10"></div>
+    <div class="glass-card rounded-2xl border border-pink-500/10 p-8 text-center glow-pink">
+      <span class="material-icons text-pink-500 text-4xl animate-pulse mb-4">favorite</span>
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">Support AlloChat Public Good Development</h2>
+      <p class="text-slate-400 max-w-lg mx-auto text-sm leading-relaxed mb-8">
+        We build and deliver AlloChat as an entirely free, open-source Public Good. You can fuel our direct pipeline improvements, infrastructure audits, and continuous updates by forwarding a voluntary tip in **ALGO** cryptocurrency.
+      </p>
+
+      <div class="bg-brand-dark/90 border border-slate-900 rounded-xl p-5 max-w-lg mx-auto mb-6">
+        <div class="text-[10px] font-mono tracking-wider text-pink-400 uppercase mb-2">Official Donation Account Address (Algorand Mainnet)</div>
+        
+        <div class="bg-black/40 border border-slate-900 text-xs font-mono text-emerald-400 select-all p-3 rounded-lg overflow-x-auto whitespace-nowrap mb-4 leading-relaxed tracking-wider" id="donation-address">
+          RHSABLHWXLBBO6BRM6KKJL3M7TTVOYATFWOTITW7PMDTRFH6HEY2HKTMSA
+        </div>
+
+        <button onclick="copyAddress()" class="inline-flex items-center gap-1.5 bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white text-xs font-semibold px-5 py-2.5 rounded-lg transition" id="copy-btn">
+          <span class="material-icons text-sm" id="copy-icon">content_copy</span> <span id="copy-text">Copy Wallet Address</span>
+        </button>
+      </div>
+      
+      <p class="text-[10.5px] text-slate-500 font-mono">Thank you for advocating security. Every private chat line secures digital civil liberties.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-950 bg-slate-950 py-12 px-4 text-center text-slate-500 text-xs font-sans">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-2">
+        <img src="icon128.png" alt="AlloChat Logo" class="w-6 h-6 object-contain rounded shadow-sm" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/algorand/brand-assets/master/logo/png/algorand_logo_mark_black.png';">
+        <span class="text-white font-semibold">AlloChat Messenger E2E</span>
+      </div>
+      <div>
+        <p>© 2026 AlloChat. Open-source software distributed under the MIT License.</p>
+        <p class="mt-1 text-[10px] text-slate-600 font-mono">Constructed and highly streamlined around Algorand Mainnet on-chain architectures.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function copyAddress() {
+      const address = 'RHSABLHWXLBBO6BRM6KKJL3M7TTVOYATFWOTITW7PMDTRFH6HEY2HKTMSA';
+      navigator.clipboard.writeText(address).then(() => {
+        const textEl = document.getElementById('copy-text');
+        const iconEl = document.getElementById('copy-icon');
+        const btnEl = document.getElementById('copy-btn');
+        
+        textEl.textContent = 'Successfully Copied!';
+        iconEl.textContent = 'done';
+        btnEl.classList.remove('from-pink-600', 'to-pink-500');
+        btnEl.classList.add('from-emerald-600', 'to-emerald-500');
+        
+        setTimeout(() => {
+          textEl.textContent = 'Copy Wallet Address';
+          iconEl.textContent = 'content_copy';
+          btnEl.classList.remove('from-emerald-600', 'to-emerald-500');
+          btnEl.classList.add('from-pink-600', 'to-pink-500');
+        }, 2200);
+      });
+    }
+  </script>
+</body>
+</html>
